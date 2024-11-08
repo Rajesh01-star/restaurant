@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import Form from "./components/Form";
+import List from "./components/List";
 
 function App() {
+  // Initialize items state directly from localStorage if available
+  const [items, setItems] = useState(() => {
+    const storedItems = localStorage.getItem("items");
+    return storedItems ? JSON.parse(storedItems) : [];
+  });
+
+  // Save items to localStorage whenever the items array changes
+  useEffect(() => {
+    localStorage.setItem("items", JSON.stringify(items));
+  }, [items]);
+
+  // Function to add a new item
+  const getItems = (newItem) => {
+    setItems((prevItems) => [...prevItems, newItem]);
+  };
+
+  // Function to delete an item by orderId
+  const deleteItem = (orderId) => {
+    setItems((prevItems) => prevItems.filter((item) => item.orderId !== orderId));
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Form getList={getItems} />
+      <List items={items} onDelete={deleteItem} />
     </div>
   );
 }
